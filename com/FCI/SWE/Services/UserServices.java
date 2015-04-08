@@ -25,6 +25,8 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
+import com.FCI.SWE.Controller.Command;
+import com.FCI.SWE.Controller.FriendAcceptanceNotification;
 import com.FCI.SWE.Models.User;
 import com.FCI.SWE.ServicesModels.UserEntity;
 import com.google.appengine.api.datastore.DatastoreService;
@@ -54,7 +56,9 @@ public class UserServices {
 		return Response.ok(new Viewable("/jsp/entryPoint")).build();
 	}*/
 
-
+	public Command c ;
+	
+	//c.excute();
 		/**
 	 * Registration Rest service, this service will be called to make
 	 * registration. This function will store user data in data store
@@ -80,6 +84,24 @@ public class UserServices {
 	
 	
 	@POST
+	@Path("/excutemessageNotificationService")
+	public String excuteService(String n) {
+	    Command comand=new MessageNotification();
+	    System.out.print("service");
+	    //Command comand1=new MessageNotification();
+	    return comand.excute(n);
+		
+	}
+	@POST
+	@Path("/excutefriendAcceptanceService")
+	public String excuteService2() {
+	    Command comand1=new FriendAcceptanceNotification();
+	   // comand1.excute();
+		return null;
+	}
+	
+	
+	@POST
 	@Path("/SignOutService")
 	public String SignOutService() {
 		
@@ -88,6 +110,9 @@ public class UserServices {
 		object.put("Status", "OK");
 		return object.toString();
 	}
+	
+	
+	
 	
 	
 
@@ -174,5 +199,91 @@ public class UserServices {
 		
 		
 	
+	}
+	
+	
+	
+	
+	
+	
+	@POST
+	@Path("/sendmessageService")
+	public String sendrequestService(@FormParam("fname") String fname,@FormParam("message") String message) {
+		JSONObject object = new JSONObject();
+		UserEntity user1 = UserEntity.getFriend(fname);
+		if (user1 == null) {
+			object.put("Status", "Failed");
+
+		} else {
+			object.put("Status", "OK");
+			object.put("fname", user1.getName());
+			object.put("message", user1.getmessage());
+			user1.savemessage(fname,message);
+			
+		}
+
+		return "successful sending friend message";
+
 	}	
+	
+	
+	
+	
+	@POST
+	@Path("/chatgroupService")
+	public String chatgroupService(@FormParam("fname1") String fname1,
+			@FormParam("fname2") String fname2,@FormParam("fname3") String fname3,
+			@FormParam("fname4") String fname4,@FormParam("fname5") String fname5,
+			@FormParam("conversationname") String conversationname) {
+		JSONObject object = new JSONObject();
+	UserEntity user2 = UserEntity.getFriend(fname1);
+	 user2 = UserEntity.getFriend(fname2);
+     user2 = UserEntity.getFriend(fname3);
+     user2 = UserEntity.getFriend(fname4);
+     user2 = UserEntity.getFriend(fname5);
+     user2 = UserEntity.getFriend(conversationname);
+		if (user2 == null) {
+			object.put("Status", "Failed");
+
+		} else {
+			object.put("Status", "OK");
+			object.put("fname1", user2.getName());
+			object.put("fname2", user2.getName());
+			object.put("fname3", user2.getName());
+			object.put("fname4", user2.getName());
+			object.put("fname5", user2.getName());
+			object.put("conversationname", user2.getconversationname());
+			user2.savechatgroup(fname1,fname2,fname3,fname4,fname5,conversationname);
+			
+		}
+
+		return "successful chat group";
+
+	}
+	
+	
+	
+	
+	@POST
+	@Path("/writeMessageService")
+	public String writeMessageService(
+			@FormParam("message") String message,
+			@FormParam("conversationname") String conversationname) {
+		JSONObject object = new JSONObject();
+	UserEntity user2 = UserEntity.getFriend(message);
+     user2 = UserEntity.getFriend(conversationname);
+		if (user2 == null) {
+			object.put("Status", "Failed");
+
+		} else {
+			object.put("Status", "OK");
+			object.put("message", user2.getmessage());
+			object.put("conversationname", user2.getconversationname());
+			user2.savewriteMessage(message,conversationname);
+			
+		}
+		return "successful chat group";
+
+	}
+
 }
